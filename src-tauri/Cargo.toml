@@ -1,0 +1,57 @@
+[package]
+name = "mdjoa"
+version = "1.6.3"
+description = "MD좋아 - 경량 Markdown 뷰어"
+authors = ["sy.baek@fusionsoft.co.kr"]
+license = "MIT"
+repository = "https://github.com/philmis21-ui/mdjoa"
+edition = "2021"
+
+[lib]
+name = "mdjoa_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["protocol-asset"] }
+tauri-plugin-opener = "2"
+tauri-plugin-dialog = "2"
+# `watch` feature is REQUIRED for fs watch/unwatch (used by useFileWatcher /
+# useFolderWatch). Without it the watch command isn't compiled in and the JS
+# watchImmediate call throws → external file changes go undetected.
+tauri-plugin-fs = { version = "2", features = ["watch"] }
+tauri-plugin-single-instance = "2"
+tauri-plugin-window-state = "2"
+tauri-plugin-updater = "2"
+tokio = { version = "1", features = ["time"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+chardetng = "0.1"
+encoding_rs = "0.8"
+dirs = "5"
+log = "0.4"
+env_logger = "0.11"
+chrono = "0.4"
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "stream"] }
+futures-util = "0.3"
+sha2 = "0.10"
+zip = { version = "2", default-features = false, features = ["deflate"] }
+# 크로스플랫폼 시스템 휴지통 이동(영구삭제 아님). Windows·macOS·Linux 동일 API.
+trash = "5"
+
+# md 기본 앱 지정(default_app.rs)의 LSSetDefaultRoleHandlerForContentType FFI용
+# CFString 래퍼. tauri 의존성 트리에 이미 존재(전이 의존성) — 직접 사용을 위해 명시.
+[target.'cfg(target_os = "macos")'.dependencies]
+core-foundation = "0.10"
+
+[profile.dev-custom]
+inherits = "dev"
+
+[dev-dependencies]
+# Used by tests/watch.rs to verify OS file-watching (the backbone of external-
+# change detection) actually delivers events on this platform. Versions match
+# what tauri-plugin-fs's `watch` feature already pulls in.
+notify = "8"
+tempfile = "3"

@@ -1,0 +1,682 @@
+.md-body {
+  font-family: "Pretendard", system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--fg);
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+html.win .md-body {
+  font-family: "Segoe UI Variable", "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.md-body h1,
+.md-body h2,
+.md-body h3,
+.md-body h4,
+.md-body h5,
+.md-body h6 {
+  font-weight: 650;
+  line-height: 1.3;
+  letter-spacing: -0.012em;
+  margin-top: 2em;
+  margin-bottom: 0.45em;
+  color: var(--fg);
+}
+
+.md-body h1 { font-size: 1.875rem; margin-top: 1.2em; }
+.md-body h2 { font-size: 1.5rem; }
+.md-body h3 { font-size: 1.25rem; }
+.md-body h4 { font-size: 1.05rem; }
+.md-body h5 { font-size: 0.95rem; }
+.md-body h6 { font-size: 0.875rem; color: var(--fg-secondary); }
+
+.md-body h1:first-child {
+  margin-top: 0;
+}
+
+.md-body p {
+  margin-bottom: 1em;
+}
+
+.md-body a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--accent) 35%, transparent);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 120ms ease, color 120ms ease;
+}
+.md-body a:hover {
+  color: var(--accent-hover);
+  text-decoration-color: var(--accent-hover);
+}
+/* Wikilinks (#9): in-app navigation, no href — use a pointer cursor and a
+   dashed underline so they read as "links to a local doc", distinct from web
+   links. Clicking is handled by MarkdownViewer's delegated handler. */
+.md-body a.wikilink {
+  cursor: pointer;
+  text-decoration-style: dashed;
+}
+
+/* External links (http(s)/mailto): a small ↗ glyph signals "leaves the doc".
+   Decorative only — the accessible "외부 링크" hint rides on the <a title>, so
+   the glyph stays out of the accessible name. Inherits the link color
+   (var(--accent)) via currentColor, so it tracks light/dark + hover. */
+.md-body a.md-external-link::after {
+  content: "\2197"; /* ↗ NORTH EAST ARROW */
+  display: inline-block;
+  margin-left: 0.15em;
+  font-size: 0.8em;
+  color: currentColor;
+  /* Keep the arrow tied to the preceding word, never wrapped onto its own line. */
+  white-space: nowrap;
+}
+
+.md-body ul,
+.md-body ol {
+  padding-left: 1.6em;
+  margin-bottom: 1em;
+}
+
+/* Tailwind preflight resets list-style to none; restore markers for content. */
+.md-body ul {
+  list-style: disc outside;
+}
+.md-body ol {
+  list-style: decimal outside;
+}
+.md-body ul ul {
+  list-style-type: circle;
+}
+.md-body ul ul ul {
+  list-style-type: square;
+}
+
+.md-body li {
+  margin-bottom: 0.3em;
+  padding-left: 0.1em;
+}
+
+.md-body li > ul,
+.md-body li > ol {
+  margin-top: 0.3em;
+  margin-bottom: 0;
+}
+
+.md-body li.task-list-item {
+  list-style: none;
+  margin-left: -1.6em;
+  padding-left: 1.6em;
+}
+
+.md-body input.task-list-item-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--muted);
+  border-radius: 4px;
+  vertical-align: -3px;
+  margin-right: 0.55em;
+  position: relative;
+  background: transparent;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+.md-body input.task-list-item-checkbox:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.md-body input.task-list-item-checkbox:checked::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 0.5px;
+  width: 5px;
+  height: 9px;
+  border-right: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  transform: rotate(45deg);
+}
+
+.md-body li.task-list-item:has(> input:checked) {
+  color: var(--muted);
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in srgb, var(--muted) 60%, transparent);
+}
+
+.md-body blockquote {
+  border-left: 3px solid color-mix(in srgb, var(--accent) 40%, var(--border));
+  background: color-mix(in srgb, var(--surface) 55%, transparent);
+  margin: 1.2em 0;
+  padding: 0.6em 1em;
+  border-radius: 0 6px 6px 0;
+  color: var(--fg);
+}
+
+.md-body blockquote > :first-child {
+  margin-top: 0;
+}
+
+.md-body blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+.md-body details {
+  margin: 1.2em 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.6em 1em;
+}
+
+.md-body details[open] summary {
+  margin-bottom: 0.6em;
+}
+
+.md-body summary {
+  cursor: pointer;
+  color: var(--fg);
+  font-weight: 500;
+}
+
+.md-body details > :last-child {
+  margin-bottom: 0;
+}
+
+.md-body code {
+  font-family: "D2Coding", "JetBrains Mono", monospace;
+  font-size: 0.82em;
+  color: var(--code-fg);
+  background: var(--code-bg);
+  border-radius: 4px;
+  padding: 0.15em 0.4em;
+}
+
+.md-body pre {
+  margin: 1.2em 0;
+  border-radius: 8px;
+  overflow-x: auto;
+  background: var(--code-block-bg);
+  border: 1px solid var(--border);
+  padding: 1.1em 1.3em;
+}
+
+.md-body pre code {
+  background: transparent;
+  border: none;
+  color: inherit;
+  padding: 0;
+  font-size: 0.9375em;
+}
+
+/* Code block wrapper: language label + copy button */
+.md-body .code-block {
+  position: relative;
+  margin: 1.2em 0;
+}
+
+.md-body .code-block pre,
+.md-body .code-block .shiki {
+  margin: 0;
+}
+
+.md-body .code-lang {
+  position: absolute;
+  top: 9px;
+  left: 14px;
+  font-family: "D2Coding", "JetBrains Mono", monospace;
+  font-size: 0.7rem;
+  color: var(--muted);
+  user-select: none;
+  pointer-events: none;
+}
+
+.md-body .code-block:has(.code-lang) pre {
+  padding-top: 2.1em;
+}
+
+.md-body .code-copy {
+  position: absolute;
+  top: 7px;
+  right: 8px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--muted);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 2px 8px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 130ms ease, color 120ms ease, background 120ms ease;
+}
+
+.md-body .code-block:hover .code-copy {
+  opacity: 1;
+}
+
+.md-body .code-copy:hover {
+  color: var(--fg);
+  background: var(--surface);
+}
+
+/* Shiki code block container */
+.md-body .shiki {
+  border-radius: 8px;
+  padding: 1.1em 1.3em;
+  overflow-x: auto;
+  background: var(--code-block-bg) !important;
+  border: 1px solid var(--border);
+  font-size: 0.9375em;
+  line-height: 1.5;
+}
+
+/* Editor live syntax-highlight backdrop (Editor.tsx, non-markdown source files):
+   a transparent <textarea> sits on top of this; Shiki's colored text shows
+   through. `all: unset` strips Shiki's own pre/code font/padding/border/
+   background (set inline per its theme) so this layer inherits the wrapper's
+   font metrics exactly — pixel-for-pixel alignment with the textarea is the
+   whole point.
+   `white-space: pre` (NOT pre-wrap) deliberately turns off wrapping, matching
+   the textarea's `wrap="off"` — both scroll horizontally instead. Tested with
+   pre-wrap first: a plain <textarea>'s native soft-wrap and a wrapped <pre>'s
+   CSS Text wrap algorithm pick different break points on long unbroken tokens
+   (their available content-box width differs slightly whenever only one of
+   the two elements currently shows a scrollbar), so long lines drifted out of
+   alignment. No-wrap sidesteps the mismatch entirely: every source line is
+   exactly one row in both layers, so there's no wrap point to disagree on. */
+.editor-code-backdrop pre.shiki,
+.editor-code-backdrop pre.shiki code {
+  all: unset;
+  display: block;
+  white-space: pre;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  tab-size: inherit;
+}
+
+/* ```diff row tints. Each Shiki `.line` is made a full-width inline-block ONLY
+   for diff rows so the green/red wash spans the whole code width. Using
+   inline-block (not block) keeps the line in the inline flow — the literal "\n"
+   between Shiki lines still provides the single line break, so this does NOT
+   double the line spacing the way `display:block` would. Subtle washes that read
+   on both light and dark code backgrounds; marker text color comes from Shiki. */
+.md-body .shiki .line.diff-add,
+.md-body .shiki .line.diff-remove {
+  display: inline-block;
+  width: 100%;
+  /* Extend the tint just enough to close the sub-pixel sliver between rows
+     without the semi-transparent washes overlapping into a darker band. */
+  padding-block: 0.05em;
+  margin-block: -0.05em;
+}
+.md-body .shiki .line.diff-add {
+  background: color-mix(in srgb, #2ea043 16%, transparent);
+}
+.md-body .shiki .line.diff-remove {
+  background: color-mix(in srgb, #f85149 16%, transparent);
+}
+
+/* On-demand two-document compare (#27): unified (1-column) line diff. Reuses the
+   exact ```diff color tokens (#2ea043 / #f85149 at 16%) so the green/red wash
+   matches the inline-diff style and reads on both light and dark themes. */
+.compare-diff {
+  font-family: "JetBrains Mono", "D2Coding", monospace;
+  font-size: 0.85em;
+  line-height: 1.55;
+  /* Don't wrap diff lines — overflow scrolls horizontally (parent is overflow-auto). */
+  white-space: pre;
+  width: max-content;
+  min-width: 100%;
+}
+.compare-line {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5em;
+  padding-inline: 0.4em;
+}
+.compare-sign {
+  flex: 0 0 auto;
+  user-select: none;
+  color: var(--muted);
+  width: 1ch;
+  text-align: center;
+}
+/* 각 문서의 줄 번호(현재/대상). context=둘 다, remove=현재만, add=대상만. */
+.compare-lineno {
+  flex: 0 0 auto;
+  width: 3ch;
+  text-align: right;
+  color: var(--muted);
+  opacity: 0.55;
+  user-select: none;
+}
+.compare-text {
+  flex: 1 1 auto;
+  white-space: pre;
+}
+/* 좌우(2-pane) diff: 행마다 왼쪽=이전 / 오른쪽=현재 두 칸을 같은 줄에 정렬한다.
+   변경 리뷰(ReviewCenter)에서 사용. 긴 줄은 칸 안에서 줄바꿈해 가로 스크롤을 피한다. */
+.compare-split {
+  font-family: "JetBrains Mono", "D2Coding", monospace;
+  font-size: 0.85em;
+  line-height: 1.55;
+  width: 100%;
+}
+.compare-split-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.compare-cell {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5em;
+  padding-inline: 0.4em;
+  min-width: 0;
+}
+.compare-cell + .compare-cell {
+  border-left: 1px solid var(--border);
+}
+/* split 모드의 본문은 칸 폭에 맞춰 줄바꿈(통합 보기의 pre와 달리). */
+.compare-split .compare-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.compare-add {
+  background: color-mix(in srgb, #2ea043 16%, transparent);
+}
+.compare-remove {
+  background: color-mix(in srgb, #f85149 16%, transparent);
+}
+/* Legend swatches in the compare header reuse the same washes. */
+.compare-legend-swatch {
+  display: inline-block;
+  width: 0.85em;
+  height: 0.85em;
+  border-radius: 2px;
+}
+.compare-legend-swatch.compare-add {
+  background: color-mix(in srgb, #2ea043 45%, transparent);
+}
+.compare-legend-swatch.compare-remove {
+  background: color-mix(in srgb, #f85149 45%, transparent);
+}
+
+/* Code comments: italic + green, overriding Shiki's inline (gray) color. The
+   green is theme-aware via --code-comment (defined per theme in global.css).
+   Applies to full-line and trailing comments alike (transformer tags both). */
+.md-body .shiki .code-comment {
+  font-style: italic;
+  color: var(--code-comment, #1a7f37) !important;
+}
+
+.md-table-wrap {
+  overflow-x: auto;
+  margin: 1.2em 0;
+  /* Let a table use the full width of the scroll area (not just the 900px
+     prose column) when there's room, so a wide table gets more space before
+     it needs to scroll — growing to the RIGHT only, so the table's left edge
+     stays flush with the paragraph text above/below it. `100cqw` is the
+     scroll container's real inline size (see `containerType` on its React
+     style in MarkdownViewer.tsx); dividing by --zoom cancels the CSS `zoom`
+     painted on an ancestor, since cqw itself resolves in the unzoomed
+     layout. On a narrow window there's no slack (this clamps to 0), so
+     width/margin both come out as normal (no breakout, no overflow) — see
+     the width comment on .md-content. Falls back to the plain 100%-width
+     column when cqw/container queries aren't supported (the whole
+     declaration is dropped, block width applies). 2/3 (not 1/2) of the slack
+     because .md-content itself gives up its left third of the slack when a
+     table is present — see `.md-content:has(.md-table-wrap)` below. */
+  /* Edge shadows hint that the table scrolls sideways: they show only on a side
+     that still has hidden content (cover gradients scroll with the content,
+     shadow gradients stay fixed). */
+  background:
+    linear-gradient(to right, var(--bg), var(--bg)) left center / 24px 100% no-repeat local,
+    linear-gradient(to left, var(--bg), var(--bg)) right center / 24px 100% no-repeat local,
+    linear-gradient(to right, rgba(0, 0, 0, 0.14), transparent) left center / 10px 100% no-repeat scroll,
+    linear-gradient(to left, rgba(0, 0, 0, 0.14), transparent) right center / 10px 100% no-repeat scroll;
+  --table-extra: max(0px, calc((100cqw / var(--zoom, 1) - 100%) * 2 / 3));
+  /* fit-content: the wrap is only as wide as the table's natural width, never
+     narrower than the prose column (min-width) and never wider than the
+     available space — which the negative margin-right grows by --table-extra.
+     So the breakout happens only when the content actually needs it. */
+  width: fit-content;
+  min-width: 100%;
+  margin-right: calc(-1 * var(--table-extra));
+}
+
+/* A doc with a table: don't perfectly center the prose column either. Shift
+   it a third of the way into its available slack (instead of half), so a
+   wide table has more room to grow into on the right instead of the page
+   just having equal, mostly-wasted gutters on both sides. Any table counts
+   here (not just ones that end up overflowing) — this is layout, not a
+   per-table measurement, so it can't tell which tables "need" the room. */
+.md-content:has(.md-table-wrap) {
+  align-self: flex-start;
+  margin-left: max(0px, calc((100cqw / var(--zoom, 1) - 900px) / 3));
+}
+
+.md-body table {
+  border-collapse: collapse;
+  table-layout: auto;
+  width: auto;
+  min-width: 100%;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.md-body th,
+.md-body td {
+  border: 1px solid var(--border);
+  padding: 0.45em 0.9em;
+  text-align: left;
+  vertical-align: top;
+  min-width: 4ch;
+  max-width: 40ch;
+  overflow-wrap: break-word;
+}
+
+.md-body th {
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+  font-weight: 600;
+  color: var(--fg-secondary);
+  font-size: 0.85rem;
+  /* Keep column titles on one line (e.g. 빠른 열기/단축키 표 헤더). */
+  white-space: nowrap;
+}
+
+/* Inline code inside table cells — typically shortcuts like `Ctrl+Shift+F` —
+   should not wrap mid-combo. */
+.md-body th code,
+.md-body td code {
+  white-space: nowrap;
+}
+
+.md-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+
+.md-body hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2em 0;
+}
+
+/* YAML frontmatter metadata card */
+.md-body .md-frontmatter {
+  display: grid;
+  grid-template-columns: minmax(80px, max-content) 1fr;
+  gap: 0.35em 1em;
+  align-items: baseline;
+  margin: 0 0 1.8em;
+  padding: 0.9em 1.1em;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.md-body .md-frontmatter:first-child {
+  margin-top: 0;
+}
+
+.md-body .md-fm-key {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.md-body .md-fm-val {
+  color: var(--fg);
+  word-break: break-word;
+}
+
+/* Obsidian/GitHub-style callouts */
+.md-body .md-callout {
+  --callout-hue: var(--accent);
+  margin: 1.4em 0;
+  padding: 0.8em 1em;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--callout-hue);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--callout-hue) 8%, var(--surface));
+}
+
+.md-body .md-callout:first-child {
+  margin-top: 0;
+}
+
+.md-body .md-callout-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  font-weight: 650;
+  color: color-mix(in srgb, var(--callout-hue) 65%, var(--fg));
+  letter-spacing: -0.01em;
+}
+
+.md-body .md-callout-icon {
+  font-size: 1em;
+  line-height: 1;
+  flex: none;
+}
+
+.md-body .md-callout-body {
+  margin-top: 0.5em;
+  color: var(--fg);
+}
+
+/* Collapse default paragraph spacing inside the body for a compact box. */
+.md-body .md-callout-body > :first-child {
+  margin-top: 0;
+}
+.md-body .md-callout-body > :last-child {
+  margin-bottom: 0;
+}
+
+/* When the callout has no body content, drop the empty body box. */
+.md-body .md-callout-body:empty {
+  display: none;
+}
+
+/* Per-type hue. Body text stays var(--fg) for readability on both themes;
+   the hue tints the title, left accent, and a faint background wash. */
+.md-body .md-callout-note { --callout-hue: var(--accent); }
+.md-body .md-callout-tip { --callout-hue: #2ea043; }
+.md-body .md-callout-important { --callout-hue: #8957e5; }
+.md-body .md-callout-warning { --callout-hue: #d29922; }
+.md-body .md-callout-caution { --callout-hue: #e5534b; }
+
+/* Footnotes */
+.md-body .footnotes {
+  margin-top: 2.5em;
+  padding-top: 1.2em;
+  border-top: 1px solid var(--border);
+  font-size: 0.875em;
+  color: var(--muted);
+}
+
+/* Search highlight */
+.md-body mark.search-highlight {
+  background: color-mix(in srgb, #f5c518 38%, transparent);
+  color: inherit;
+  border-radius: 3px;
+  padding: 0 2px;
+}
+
+.md-body mark.search-highlight.current {
+  background: #f0b400;
+  color: #1f1f1f;
+}
+
+/* Mermaid diagrams */
+.md-body .mermaid-block {
+  margin: 1.4em 0;
+  display: flex;
+  justify-content: center;
+}
+
+/* Placeholder until the diagram renders, so the text below doesn't jump. */
+.md-zoomable .mermaid-block:empty {
+  min-height: 120px;
+}
+
+/* Clickable → full-size view (see ZoomOverlay). Linked images keep the link. */
+.md-zoomable img,
+.md-zoomable .mermaid-rendered svg {
+  cursor: zoom-in;
+}
+.md-zoomable a img {
+  cursor: pointer;
+}
+
+.md-body .mermaid-block.mermaid-rendered {
+  /* Diagrams are images, not code — render them on the page background (no gray
+     code-block box), centered, with horizontal scroll only if wider than the
+     content column. */
+  overflow-x: auto;
+  /* Not `center`: a centered flex item that overflows gets its left edge
+     clipped and unreachable by scroll. Auto margins on the svg center it
+     when it fits and start-align it when it overflows. */
+  justify-content: flex-start;
+}
+
+.md-body .mermaid-block svg {
+  max-width: 100%;
+  height: auto;
+  margin-inline: auto;
+}
+
+.md-body .mermaid-block.mermaid-error {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5em;
+}
+
+.md-body .mermaid-error-note {
+  font-size: 0.8rem;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+}
+.md-body .mermaid-error-note::before {
+  content: "⚠";
+  color: #e0a800;
+}
+
+/* Dark theme: transparent PNGs drawn for white pages (black lines/text) vanish
+   on the dark background — give images a light backing. Opaque images are
+   unaffected. */
+.dark .md-body img {
+  background: #fff;
+}

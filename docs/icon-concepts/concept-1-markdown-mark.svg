@@ -1,0 +1,13 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <title>시안 1 — 마크다운 마크 (M↓)</title>
+  <!-- Paper-light squircle: "content first / 문서" 느낌. -->
+  <rect x="32" y="32" width="960" height="960" rx="232" fill="#FAFAF8"/>
+  <rect x="34" y="34" width="956" height="956" rx="230" fill="none" stroke="#E4E4E1" stroke-width="4"/>
+  <g fill="none" stroke-linejoin="round" stroke-linecap="round" stroke-width="68">
+    <!-- M (잉크) -->
+    <path d="M250 706 V348 L398 520 L546 348 V706" stroke="#1F1F1F"/>
+    <!-- 다운 애로우 (포인트 컬러) -->
+    <path d="M700 348 V630" stroke="#4F7AF8"/>
+    <path d="M624 552 L700 640 L776 552" stroke="#4F7AF8"/>
+  </g>
+</svg>

@@ -1,0 +1,22 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <title>시안 2 — 문서 + 좋아(하트)</title>
+  <!-- 포인트 컬러 배경에 흰 문서: 브랜드 "좋아"의 감성(하트). -->
+  <defs>
+    <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5C84FF"/>
+      <stop offset="1" stop-color="#3D66E0"/>
+    </linearGradient>
+  </defs>
+  <rect x="32" y="32" width="960" height="960" rx="232" fill="url(#g2)"/>
+  <!-- 문서(접힌 모서리) -->
+  <path d="M312 236 H600 L728 364 V788 Q728 812 704 812 H312 Q288 812 288 788 V260 Q288 236 312 236 Z" fill="#FFFFFF"/>
+  <path d="M600 236 V340 Q600 364 624 364 H728 Z" fill="#D9E2FF"/>
+  <!-- 본문 라인 -->
+  <g stroke="#C7D2EC" stroke-width="26" stroke-linecap="round">
+    <line x1="356" y1="452" x2="612" y2="452"/>
+    <line x1="356" y1="520" x2="660" y2="520"/>
+    <line x1="356" y1="588" x2="560" y2="588"/>
+  </g>
+  <!-- 하트(좋아) -->
+  <path d="M566 700 c-30 -34 -86 -22 -86 26 c0 40 86 92 86 92 c0 0 86 -52 86 -92 c0 -48 -56 -60 -86 -26 Z" fill="#4F7AF8"/>
+</svg>

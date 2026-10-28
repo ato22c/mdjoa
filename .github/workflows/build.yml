@@ -1,0 +1,92 @@
+# CI 빌드 매트릭스 — Windows(메인 타깃, 릴리스 게이트 1급) + macOS 동시 빌드.
+# macOS에서만 로컬 빌드하는 제약을 보완: Windows 컴파일·번들은 windows-latest 러너가
+# 검증한다. (#[cfg(target_os="windows")] 분기는 여기서 처음으로 실제 컴파일됨.)
+# 코드 서명은 별도 Windows 서명 잡으로 분리(docs/windows-strategy.md §2).
+name: build
+
+on:
+  # 자동 트리거(push/PR/tag) 임시 중지 — 수동 실행(workflow_dispatch)만 가능.
+  # 다시 켜려면 아래 주석을 해제하세요.
+  # push:
+  #   branches: [main, "feat/**"]
+  #   tags: ["v*"]
+  # pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false # 한쪽이 실패해도 다른 OS 결과를 봐야 하므로
+      matrix:
+        platform: [windows-latest, macos-latest]
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install frontend deps
+        run: npm ci
+
+      - name: Type-check + unit tests
+        run: |
+          npx tsc --noEmit
+          npx vitest run
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: "./src-tauri -> target"
+
+      # Tauri 빌드 = 프런트(vite) 빌드 + Rust 릴리스 + 플랫폼 번들 생성.
+      # Windows: NSIS(.exe)/MSI, macOS: .app/.dmg.
+      - name: Build (Tauri)
+        run: npm run tauri build
+
+      - name: Upload bundles
+        uses: actions/upload-artifact@v4
+        with:
+          name: mdjoa-${{ matrix.platform }}
+          path: |
+            src-tauri/target/release/bundle/**/*.dmg
+            src-tauri/target/release/bundle/**/*.exe
+            src-tauri/target/release/bundle/**/*.msi
+          if-no-files-found: warn
+
+  # 태그(v*) 푸시에서만: 두 OS 번들을 모아 ASCII 이름으로 정리 후 GitHub Release에 자동 첨부.
+  # 매트릭스 잡에서 각자 올리면 같은 릴리스를 동시에 만들며 경합하므로, needs: build 단일 잡으로 한 번에 올린다.
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # 릴리스 생성·에셋 업로드에 필요
+    steps:
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      # 번들 파일명은 표시명("MD좋아")으로 시작해 GitHub 에셋에서 한글이 깨진다.
+      # 제품 prefix를 ASCII("mdjoa")로 바꿔 dist/에 모은다(첫 '_' 앞부분만 치환 — 로케일 무관).
+      - name: Stage assets (ASCII names)
+        shell: bash
+        run: |
+          mkdir -p dist
+          shopt -s globstar nullglob
+          for f in artifacts/**/*.dmg artifacts/**/*.exe artifacts/**/*.msi; do
+            base=$(basename "$f")
+            cp "$f" "dist/mdjoa_${base#*_}"
+            echo "staged: mdjoa_${base#*_}"
+          done
+          ls -la dist
+
+      - name: Attach to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          fail_on_unmatched_files: true

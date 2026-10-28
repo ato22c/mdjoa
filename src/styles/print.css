@@ -1,0 +1,111 @@
+@media print {
+  /* 평소엔 데스크톱 앱이 스크롤되지 않도록 html/body/#root에 height:100% +
+     overflow:hidden이 걸려 있다(global.css). 인쇄 때 이게 남아 있으면 본문이
+     1페이지로 잘리므로, 높이/overflow 제한을 풀어 여러 페이지로 흐르게 한다. */
+  html,
+  body {
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  .no-print,
+  .sidebar,
+  .topbar,
+  .titlebar,
+  .search-bar,
+  .toast,
+  .md-body .code-copy {
+    display: none !important;
+  }
+
+  /* 인쇄 시 레이아웃 컨테이너를 block으로 펼쳐서 본문이 전체 너비 차지 */
+  #root,
+  #root > div,
+  .flex-1.flex.overflow-hidden,
+  .flex-1.min-h-0,
+  .overflow-auto {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  .md-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    /* 화면 확대/축소(zoom)는 인쇄에 반영하지 않는다 — 항상 100%로 출력 */
+    zoom: 1 !important;
+    /* .md-table-wrap의 cqw 폭 계산도 같은 zoom=1 기준으로 맞춘다(markdown.css). */
+    --zoom: 1 !important;
+  }
+
+  .md-body {
+    color: #000 !important;
+    font-size: 11pt !important;
+    line-height: 1.6 !important;
+  }
+
+  .md-body a {
+    color: #000 !important;
+    text-decoration: underline !important;
+  }
+
+  .md-body pre,
+  .md-body .shiki {
+    background: #f5f5f5 !important;
+    color: #000 !important;
+    border: 1px solid #ccc !important;
+    page-break-inside: avoid;
+  }
+
+  .md-table-wrap {
+    overflow: visible !important;
+    background: none !important;
+  }
+
+  /* Screen-only shrink floor (mermaid.ts): print must fit the page, not clip. */
+  .md-body .mermaid-block svg {
+    min-width: 0 !important;
+  }
+
+  .md-body table {
+    page-break-inside: avoid;
+  }
+
+  .md-body h1,
+  .md-body h2,
+  .md-body h3 {
+    page-break-after: avoid;
+  }
+
+  .md-body img,
+  .md-body .mermaid-block {
+    max-width: 100%;
+    page-break-inside: avoid;
+  }
+
+  /* Render mermaid diagrams in black on white for print/PDF */
+  .md-body .mermaid-block.mermaid-rendered {
+    background: #fff !important;
+    padding: 0 !important;
+  }
+
+  /* @page margin: 0 → 브라우저 URL/날짜 헤더푸터 제거, body에 여백 직접 부여 */
+  @page {
+    margin: 0;
+  }
+
+  body {
+    padding: 18mm 16mm !important;
+  }
+}

@@ -1,0 +1,9 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <title>시안 3-G — md 모노그램 + 붉은 점이 m 앞에 걸침 (다크)</title>
+  <rect x="32" y="32" width="960" height="960" rx="232" fill="#1F2024"/>
+  <text x="512" y="512" text-anchor="middle" dominant-baseline="central"
+        font-family="Pretendard, -apple-system, 'Segoe UI', system-ui, sans-serif"
+        font-size="560" font-weight="700" letter-spacing="-20" fill="#F4F4F2">md</text>
+  <!-- 붉은 점: 'm' 앞쪽(왼쪽)에 걸쳐지게. 텍스트 뒤에 그려 m 위로 겹침 -->
+  <circle cx="262" cy="586" r="80" fill="#EF4444"/>
+</svg>

@@ -1,0 +1,11 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <title>시안 3-C — md 모노그램 + 붉은 하트 (다크 배경)</title>
+  <rect x="32" y="32" width="960" height="960" rx="232" fill="#1F2024"/>
+  <text x="476" y="512" text-anchor="middle" dominant-baseline="central"
+        font-family="Pretendard, -apple-system, 'Segoe UI', system-ui, sans-serif"
+        font-size="560" font-weight="700" letter-spacing="-20" fill="#F4F4F2">md</text>
+  <!-- 붉은 하트 (좋아). 큰 사이즈, md 오른쪽 하단 액센트 -->
+  <path transform="translate(693,616) scale(1.58)"
+        d="M50,84 C50,84 12,56 12,30 C12,16 24,8 36,12 C44,15 50,24 50,24 C50,24 56,15 64,12 C76,8 88,16 88,30 C88,56 50,84 50,84 Z"
+        fill="#EF4444"/>
+</svg>

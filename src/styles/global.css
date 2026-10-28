@@ -1,0 +1,300 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Pretendard";
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/PretendardVariable.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/JetBrainsMonoVariable.woff2") format("woff2");
+}
+
+/* D2Coding (Naver, SIL OFL 1.1) — primary code font. Drop the font file at
+   public/fonts/D2Coding.woff2 (or .ttf); until then code falls back to
+   JetBrains Mono via the font-family stack, so nothing breaks. */
+@font-face {
+  font-family: "D2Coding";
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/D2Coding.woff2") format("woff2"),
+    url("/fonts/D2Coding.ttf") format("truetype");
+}
+
+:root {
+  --bg: #fafaf8;
+  --fg: #1f1f1f;
+  --fg-secondary: #5f5e5b;
+  --surface: #f0f0ee;
+  --border: #e4e4e1;
+  --muted: #747370;
+  --accent: #3d66e0;
+  --accent-hover: #2b52c8;
+  /* Full-strength accent that is NOT muted while the window is inactive — for
+     filled buttons whose white label must stay readable regardless of focus. */
+  --accent-strong: #3d66e0;
+  --sidebar-bg: #f4f4f2;
+  /* Alpha-based interaction states: blend naturally over any surface */
+  --hover: rgba(31, 31, 31, 0.05);
+  --active: rgba(31, 31, 31, 0.085);
+  --code-bg: rgba(135, 131, 120, 0.15);
+  --code-fg: #d6443c;
+  --code-block-bg: #f5f4ef;
+  --code-comment: #1a7f37;
+  --shadow-popover:
+    0 0 0 1px rgba(31, 31, 31, 0.06),
+    0 4px 12px rgba(31, 31, 31, 0.08),
+    0 12px 28px rgba(31, 31, 31, 0.06);
+  font-family: "Pretendard", system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Windows 시스템 폰트 (Segoe UI Variable / Segoe UI + Malgun Gothic) */
+html.win {
+  font-family: "Segoe UI Variable", "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+/* 본문 폰트 설정: data-content-font 속성으로 제어 */
+html[data-content-font="pretendard"] .md-body {
+  font-family: "Pretendard", system-ui, sans-serif !important;
+}
+html[data-content-font="system"] .md-body {
+  font-family: system-ui, "Segoe UI Variable", "Segoe UI", "Malgun Gothic", sans-serif !important;
+}
+
+.dark {
+  --bg: #1e1e20;
+  --fg: #e8e8e6;
+  --fg-secondary: #b6b6b2;
+  --surface: #2a2a2c;
+  --border: #38383b;
+  --muted: #8a8a88;
+  --accent: #6b96ff;
+  --accent-hover: #7fa8ff;
+  --accent-strong: #6b96ff;
+  --sidebar-bg: #252527;
+  --hover: rgba(255, 255, 255, 0.055);
+  --active: rgba(255, 255, 255, 0.09);
+  --code-bg: rgba(135, 131, 120, 0.22);
+  --code-fg: #ff7369;
+  --code-block-bg: #313134;
+  --code-comment: #6aa56a;
+  --shadow-popover:
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 6px 16px rgba(0, 0, 0, 0.35),
+    0 16px 36px rgba(0, 0, 0, 0.3);
+}
+
+/* In @layer base so Tailwind's (later) utilities layer wins — otherwise this
+   unlayered reset would override every px-/py-/p-/m- utility, silently zeroing
+   padding across menus, modals, etc. */
+@layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(135, 131, 120, 0.3);
+  border-radius: 5px;
+  background-clip: padding-box;
+  border: 2px solid transparent;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(135, 131, 120, 0.5);
+  background-clip: padding-box;
+  border: 2px solid transparent;
+}
+
+/* Selection */
+::selection {
+  background: color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+/* Subtle entrance animation for toasts, popovers, modals (≤150ms per design rule) */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 140ms ease-out;
+}
+
+/* Centering is handled by the ToastRegion container; the pill only slides up. */
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-toast-in {
+  animation: toast-in 140ms ease-out;
+}
+
+/* Shared chrome primitives */
+.icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 6px;
+  color: var(--muted);
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.icon-btn:hover:not(:disabled) {
+  background: var(--hover);
+  color: var(--fg);
+}
+
+.icon-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+  /* opacity < 1 creates a new stacking context, which would otherwise trap
+     the tooltip's z-index: 200 locally and demote this whole button to
+     z-index: auto in the outer context — losing to later-DOM siblings like
+     the sidebar. An explicit z-index here keeps the tooltip on top. */
+  z-index: 1;
+}
+
+.icon-btn:active {
+  background: var(--active);
+}
+
+.icon-btn.is-active {
+  color: var(--accent);
+}
+
+.row-hover {
+  transition: background 120ms ease;
+}
+
+.row-hover:hover {
+  background: var(--hover);
+}
+
+kbd.kbd-hint {
+  font-family: "Pretendard", system-ui, sans-serif;
+  font-size: 11px;
+  color: var(--muted);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+
+/* Hover tooltips for icon buttons. Add data-tooltip="..."; the bubble appears
+   below the element (top-bar sits at the top of the window). */
+[data-tooltip] {
+  position: relative;
+}
+[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-2px);
+  z-index: 200;
+  white-space: nowrap;
+  pointer-events: none;
+  font-size: 11px;
+  line-height: 1;
+  padding: 5px 8px;
+  border-radius: 6px;
+  background: #1f1f1f;
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+.dark [data-tooltip]::after {
+  background: #e8e8e6;
+  color: #1f1f1f;
+}
+[data-tooltip]:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  transition-delay: 350ms;
+}
+/* Right-aligned tooltip for buttons near the window's right edge (avoids
+   overflowing off-screen). */
+[data-tooltip-align="end"]::after {
+  left: auto;
+  right: 0;
+  transform: translateY(-2px);
+}
+[data-tooltip-align="end"]:hover::after {
+  transform: translateY(0);
+}
+/* Multiline tooltip — used for the file-info bubble (path + dates), which can
+   be long. Newlines in the attribute become line breaks (pre-line). */
+[data-tooltip-multiline]::after {
+  white-space: pre-line;
+  max-width: 440px;
+  width: max-content;
+  text-align: left;
+  word-break: break-all;
+  line-height: 1.55;
+}
+
+/* Window-inactive (blurred) state — subtly dim the chrome per OS convention.
+   Only the topbar/sidebar chrome is dimmed; the document text stays at full
+   contrast for readability. Works in both light and dark themes since it acts
+   on opacity, not theme-specific colors. The transition fades focus/blur. */
+.topbar,
+.sidebar {
+  transition: opacity 140ms ease;
+}
+.window-inactive .topbar,
+.window-inactive .sidebar {
+  opacity: 0.92;
+}
+/* Mute the accent slightly while inactive so accent-colored chrome elements
+   feel calmer. Inherited by both themes' --accent values. */
+.window-inactive {
+  --accent: color-mix(in srgb, var(--accent) 80%, var(--muted));
+}

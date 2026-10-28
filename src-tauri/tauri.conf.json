@@ -1,0 +1,96 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "MD좋아",
+  "mainBinaryName": "mdjoa",
+  "version": "1.6.3",
+  "identifier": "com.fusionsoft.mdjoa",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "MD좋아",
+        "width": 1200,
+        "height": 800,
+        "minWidth": 600,
+        "minHeight": 400,
+        "decorations": false,
+        "transparent": false
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline' asset: https://asset.localhost; img-src 'self' asset: https://asset.localhost data:; frame-src 'self' blob: asset: https://asset.localhost; font-src 'self' data:",
+      "assetProtocol": {
+        "enable": true,
+        "scope": [
+          "**"
+        ]
+      }
+    }
+  },
+  "bundle": {
+    "active": true,
+    "createUpdaterArtifacts": true,
+    "targets": [
+      "app",
+      "dmg",
+      "nsis"
+    ],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "copyright": "Copyright © 2026 sy.baek@fusionsoft.co.kr. All rights reserved.",
+    "category": "Productivity",
+    "shortDescription": "경량 Markdown 뷰어",
+    "resources": {
+      "resources/THIRD-PARTY-LICENSES.txt": "resources/THIRD-PARTY-LICENSES.txt",
+      "../docs/user-manual.md": "docs/user-manual.md",
+      "../docs/user-manual.en.md": "docs/user-manual.en.md",
+      "resources/en.lproj/InfoPlist.strings": "en.lproj/InfoPlist.strings",
+      "resources/ko.lproj/InfoPlist.strings": "ko.lproj/InfoPlist.strings"
+    },
+    "fileAssociations": [
+      {
+        "ext": [
+          "md",
+          "markdown"
+        ],
+        "name": "Markdown Document",
+        "description": "Markdown 문서",
+        "role": "Viewer"
+      }
+    ],
+    "macOS": {
+      "infoPlist": "Info.plist"
+    },
+    "windows": {
+      "webviewInstallMode": {
+        "type": "downloadBootstrapper"
+      },
+      "nsis": {
+        "installMode": "currentUser",
+        "languages": [
+          "Korean",
+          "English"
+        ],
+        "installerHooks": "windows/installer-hooks.nsh"
+      }
+    }
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDIyMURCQ0I0RTZEQURFRTMKUldUajN0cm10THdkSW85NFlpNkdOK1VpYTlCSExsNTZFQ0srS01uOUNPL0hvODFPNHJqbGd2eUoK",
+      "endpoints": [
+        "https://github.com/ato22c/mdjoa/releases/latest/download/latest.json"
+      ]
+    }
+  }
+}

@@ -1,0 +1,17 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <title>시안 5 — 변경 하이라이트 (AI-dev 차별점)</title>
+  <!-- "AI가 바꾼 줄을 즉시 본다" — 한 줄만 포인트로 강조된 문서. 제품 차별점 시각화. -->
+  <rect x="32" y="32" width="960" height="960" rx="232" fill="#FAFAF8"/>
+  <rect x="34" y="34" width="956" height="956" rx="230" fill="none" stroke="#E4E4E1" stroke-width="4"/>
+  <!-- 강조 밴드(변경된 줄) -->
+  <rect x="232" y="520" width="560" height="96" rx="20" fill="#4F7AF8" opacity="0.16"/>
+  <rect x="232" y="520" width="14" height="96" rx="7" fill="#4F7AF8"/>
+  <g stroke-linecap="round" stroke="#C9C8C2" stroke-width="44">
+    <line x1="300" y1="372" x2="724" y2="372"/>
+    <line x1="300" y1="448" x2="640" y2="448"/>
+    <!-- 강조된 줄(잉크 진하게) -->
+    <line x1="300" y1="568" x2="700" y2="568" stroke="#1F1F1F"/>
+    <line x1="300" y1="688" x2="724" y2="688"/>
+    <line x1="300" y1="764" x2="560" y2="764"/>
+  </g>
+</svg>

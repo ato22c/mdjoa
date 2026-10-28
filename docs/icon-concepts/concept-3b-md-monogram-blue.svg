@@ -1,0 +1,10 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <title>시안 3-B — md 모노그램 (파랑 배경 + 검정 닷)</title>
+  <!-- 배경 = 포인트 컬러(기존 닷 색), 닷 = 검정. -->
+  <rect x="32" y="32" width="960" height="960" rx="232" fill="#4F7AF8"/>
+  <text x="512" y="512" text-anchor="middle" dominant-baseline="central"
+        font-family="Pretendard, -apple-system, 'Segoe UI', system-ui, sans-serif"
+        font-size="560" font-weight="700" letter-spacing="-20" fill="#FFFFFF">md</text>
+  <!-- 마크다운 다운-닷 (검정) -->
+  <circle cx="772" cy="694" r="46" fill="#111114"/>
+</svg>

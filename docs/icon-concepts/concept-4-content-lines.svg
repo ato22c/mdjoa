@@ -1,0 +1,17 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <title>시안 4 — 콘텐츠 라인 (Typora 계열, 콘텐츠 퍼스트)</title>
+  <!-- 본문이 주인공: 제목 한 줄(포인트) + 본문 라인. 가장 미니멀·차분. -->
+  <rect x="32" y="32" width="960" height="960" rx="232" fill="#FAFAF8"/>
+  <rect x="34" y="34" width="956" height="956" rx="230" fill="none" stroke="#E4E4E1" stroke-width="4"/>
+  <g stroke-linecap="round">
+    <!-- 제목 줄 (포인트 컬러, 굵게) -->
+    <line x1="276" y1="356" x2="612" y2="356" stroke="#4F7AF8" stroke-width="62"/>
+    <!-- 본문 줄 -->
+    <g stroke="#C9C8C2" stroke-width="44">
+      <line x1="276" y1="476" x2="748" y2="476"/>
+      <line x1="276" y1="566" x2="748" y2="566"/>
+      <line x1="276" y1="656" x2="700" y2="656"/>
+      <line x1="276" y1="746" x2="560" y2="746"/>
+    </g>
+  </g>
+</svg>

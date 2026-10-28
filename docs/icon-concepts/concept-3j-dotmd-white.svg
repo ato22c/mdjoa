@@ -1,0 +1,9 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <title>시안 3-J — ".md" 흰 배경 · 파란 점 · 검정 글자</title>
+  <rect x="32" y="32" width="960" height="960" rx="232" fill="#FFFFFF"/>
+  <rect x="34" y="34" width="956" height="956" rx="230" fill="none" stroke="#E4E4E1" stroke-width="4"/>
+  <text x="606" y="720" text-anchor="middle" dominant-baseline="alphabetic"
+        font-family="Pretendard, -apple-system, 'Segoe UI', system-ui, sans-serif"
+        font-size="560" font-weight="700" letter-spacing="-18" fill="#1F1F1F">md</text>
+  <circle cx="314" cy="648" r="74" fill="#4F7AF8"/>
+</svg>

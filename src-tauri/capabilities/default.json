@@ -1,0 +1,30 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Capability for the main window and secondary document windows (doc-*)",
+  "windows": ["main", "doc-*"],
+  "permissions": [
+    "core:default",
+    "core:window:allow-start-dragging",
+    "core:window:allow-minimize",
+    "core:window:allow-toggle-maximize",
+    "core:window:allow-close",
+    "core:window:allow-is-maximized",
+    "core:window:allow-set-decorations",
+    "core:window:allow-set-title",
+    "opener:default",
+    {
+      "identifier": "opener:allow-open-url",
+      "allow": [{ "url": "ms-settings:*" }]
+    },
+    "opener:allow-reveal-item-in-dir",
+    "dialog:default",
+    "dialog:allow-open",
+    "fs:default",
+    "fs:read-files",
+    "fs:allow-watch",
+    "fs:allow-unwatch",
+    "fs:scope-home-recursive",
+    "window-state:default"
+  ]
+}

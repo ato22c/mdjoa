@@ -1,0 +1,10 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <title>시안 3 — md 모노그램</title>
+  <!-- 개발자 친화 워드마크. 소문자 md + 포인트 컬러 닷. -->
+  <rect x="32" y="32" width="960" height="960" rx="232" fill="#1F2024"/>
+  <text x="512" y="512" text-anchor="middle" dominant-baseline="central"
+        font-family="Pretendard, -apple-system, 'Segoe UI', system-ui, sans-serif"
+        font-size="560" font-weight="700" letter-spacing="-20" fill="#F4F4F2">md</text>
+  <!-- 마크다운 다운-닷 액센트 -->
+  <circle cx="772" cy="694" r="46" fill="#4F7AF8"/>
+</svg>

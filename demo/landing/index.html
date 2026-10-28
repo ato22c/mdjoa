@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MD좋아 — AI가 고친 문서, 눈으로 바로 확인</title>
+<style>
+  @font-face {
+    font-family: "Pretendard";
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+    src: url("/fonts/PretendardVariable.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "JetBrains Mono";
+    font-weight: 100 800;
+    font-style: normal;
+    font-display: swap;
+    src: url("/fonts/JetBrainsMonoVariable.woff2") format("woff2");
+  }
+
+  :root {
+    --paper: #fafaf8;
+    --paper-2: #f2f1ec;
+    --ink: #1f1f1f;
+    --ink-soft: #57564f;
+    --ink-faint: #908f8b;
+    --rule: #e5e4df;
+    --accent: #4f7af8;
+    --accent-deep: #3d66e0;
+    --code-red: #d6443c;
+    --dark-bg: #1e1e20;
+    --dark-ink: #e8e8e6;
+    --dark-soft: #b6b6b2;
+    --dark-rule: #38383b;
+    --dark-accent: #6b96ff;
+    --maxw: 1080px;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Pretendard", system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.7;
+    letter-spacing: -0.006em;
+    /* Korean wraps at spaces (eojeol), never mid-word. Long tokens (URLs, code)
+       still break so nothing overflows. */
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  }
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 32px; }
+  .mono { font-family: "JetBrains Mono", ui-monospace, monospace; }
+
+  /* Markdown-syntax eyebrow — the "source" voice framing each section. */
+  .eyebrow {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    color: var(--ink-faint);
+    margin: 0 0 18px;
+  }
+  .eyebrow b { color: var(--accent); font-weight: 500; } /* the ## / > / - [x] marker */
+
+  h1, h2, h3 { letter-spacing: -0.02em; line-height: 1.18; margin: 0; text-wrap: balance; }
+  h2 { font-size: clamp(28px, 3.6vw, 40px); font-weight: 800; }
+  p { margin: 0; }
+  a { color: inherit; }
+
+  /* ── Top bar ── */
+  .topbar {
+    position: sticky; top: 0; z-index: 40;
+    background: color-mix(in srgb, var(--paper) 82%, transparent);
+    backdrop-filter: saturate(1.1) blur(10px);
+    border-bottom: 1px solid transparent;
+    transition: border-color .15s;
+  }
+  .topbar.scrolled { border-bottom-color: var(--rule); }
+  .topbar .wrap { display: flex; align-items: center; height: 64px; gap: 16px; }
+  .brand { font-weight: 800; font-size: 19px; letter-spacing: -0.03em; }
+  .brand .dot { color: var(--accent); }
+  .nav { margin-left: auto; display: flex; gap: 26px; align-items: center; }
+  .nav a { color: var(--ink-soft); text-decoration: none; font-size: 15px; font-weight: 500; }
+  .nav a:hover { color: var(--ink); }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--accent); color: #fff; text-decoration: none;
+    font-weight: 700; font-size: 15px; letter-spacing: -0.01em;
+    padding: 10px 18px; border-radius: 11px;
+    box-shadow: 0 1px 2px rgba(31,31,31,.12), 0 6px 18px rgba(79,122,248,.28);
+    transition: transform .12s, box-shadow .12s, background .12s;
+  }
+  .btn:hover { background: var(--accent-deep); transform: translateY(-1px); box-shadow: 0 2px 4px rgba(31,31,31,.14), 0 10px 26px rgba(79,122,248,.36); }
+  .btn.lg { padding: 15px 26px; font-size: 17px; border-radius: 13px; }
+  .btn.ghost { background: transparent; color: var(--ink); box-shadow: none; border: 1px solid var(--rule); }
+  .btn.ghost:hover { background: var(--paper-2); transform: none; }
+
+  /* ── Hero ── */
+  .hero { padding: 92px 0 40px; }
+  .hero-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 56px; align-items: center; }
+  /* The thesis: a raw markdown line resolving into its rendered form. */
+  .transform { margin-bottom: 22px; }
+  .transform .src {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 15px; color: var(--ink-faint);
+    background: var(--paper-2); border: 1px solid var(--rule);
+    border-radius: 9px; padding: 8px 13px; display: inline-block;
+  }
+  .transform .src .hash { color: var(--code-red); }
+  .transform .arrow { color: var(--ink-faint); margin: 8px 0 6px; font-size: 15px; padding-left: 4px; }
+  .hero h1 { font-size: clamp(38px, 5.4vw, 62px); font-weight: 800; letter-spacing: -0.035em; }
+  .hero .sub { margin-top: 22px; font-size: 19px; color: var(--ink-soft); max-width: 30ch; }
+  .hero .cta-row { margin-top: 34px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .price-note { font-size: 14px; color: var(--ink-faint); }
+  .price-note b { color: var(--ink); font-weight: 700; }
+  .os-row { margin-top: 26px; font-size: 13.5px; color: var(--ink-faint); display: flex; gap: 18px; align-items: center; }
+  .os-row .os { display: inline-flex; align-items: center; gap: 7px; }
+  .dotsep { width: 3px; height: 3px; border-radius: 50%; background: var(--ink-faint); opacity: .5; }
+
+  /* App-window frame — mirrors the product's real titlebar (folder / file.md). */
+  .win {
+    border-radius: 14px; overflow: hidden; background: var(--paper);
+    border: 1px solid var(--rule);
+    box-shadow: 0 1px 2px rgba(31,31,31,.06), 0 18px 50px -12px rgba(31,31,31,.22);
+  }
+  .win .bar {
+    display: flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px;
+    background: var(--paper-2); border-bottom: 1px solid var(--rule);
+  }
+  .win .traffic { display: flex; gap: 7px; }
+  .win .traffic i { width: 11px; height: 11px; border-radius: 50%; display: block; }
+  .win .traffic .r { background: #ec6a5e; } .win .traffic .y { background: #f4bf4f; } .win .traffic .g { background: #61c554; }
+  .win .title { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 12px; color: var(--ink-faint); margin: 0 auto; }
+  .win .title b { color: var(--ink-soft); font-weight: 500; }
+  .win img { display: block; width: 100%; height: auto; }
+  .win.dark { background: var(--dark-bg); border-color: var(--dark-rule); }
+  .win.dark .bar { background: #252527; border-bottom-color: var(--dark-rule); }
+  .win.dark .title { color: var(--dark-soft); }
+
+  /* ── Section rhythm ── */
+  section { padding: 74px 0; }
+  .lead { font-size: 20px; color: var(--ink-soft); margin-top: 18px; max-width: 54ch; }
+
+  /* Feature row: media + copy, alternating */
+  .feat { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+  .feat.rev .feat-media { order: 2; }
+  .feat h2 + p { margin-top: 18px; color: var(--ink-soft); font-size: 18px; }
+  .feat ul { margin: 22px 0 0; padding: 0; list-style: none; }
+  .feat li { position: relative; padding-left: 26px; margin: 11px 0; color: var(--ink-soft); font-size: 16px; }
+  .feat li::before {
+    content: ""; position: absolute; left: 0; top: 8px; width: 13px; height: 13px;
+    border-radius: 4px; background: var(--accent);
+    box-shadow: inset 0 0 0 2px var(--accent);
+    -webkit-mask: none;
+  }
+  /* checkbox tick */
+  .feat li::after {
+    content: ""; position: absolute; left: 3.5px; top: 10px; width: 5px; height: 2.5px;
+    border-left: 2px solid #fff; border-bottom: 2px solid #fff; transform: rotate(-45deg);
+  }
+
+  /* Dark band */
+  .band-dark { background: var(--dark-bg); color: var(--dark-ink); }
+  .band-dark .eyebrow { color: var(--dark-soft); }
+  .band-dark .eyebrow b { color: var(--dark-accent); }
+  .band-dark .feat h2 + p, .band-dark .feat li { color: var(--dark-soft); }
+  .band-dark .feat li::before { background: var(--dark-accent); box-shadow: inset 0 0 0 2px var(--dark-accent); }
+
+  /* Problem strip */
+  .problem { background: var(--paper-2); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+  .problem .row { display: grid; grid-template-columns: 1fr 1.1fr; gap: 56px; align-items: center; }
+  .rawbox {
+    font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 13.5px; line-height: 1.75;
+    color: var(--ink-faint); background: var(--paper); border: 1px solid var(--rule);
+    border-radius: 12px; padding: 22px 24px; white-space: pre; overflow-x: auto;
+  }
+  .rawbox .m { color: var(--code-red); }
+
+  /* Why: three grounded reasons */
+  .why-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 44px; }
+  .why-card { border: 1px solid var(--rule); border-radius: 14px; padding: 26px; background: var(--paper); }
+  .why-card .k { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 13px; color: var(--accent); margin-bottom: 14px; }
+  .why-card h3 { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
+  .why-card p { margin-top: 10px; color: var(--ink-soft); font-size: 15.5px; }
+
+  /* Pricing */
+  .pricing { text-align: center; }
+  .price-card {
+    max-width: 460px; margin: 40px auto 0; border: 1px solid var(--rule); border-radius: 20px;
+    padding: 40px 36px; background: var(--paper);
+    box-shadow: 0 1px 2px rgba(31,31,31,.05), 0 22px 60px -22px rgba(31,31,31,.25);
+  }
+  .price-card .amount { font-size: 52px; font-weight: 800; letter-spacing: -0.04em; }
+  .price-card .amount span { font-size: 22px; font-weight: 600; color: var(--ink-soft); }
+  .price-card .once { color: var(--ink-soft); margin-top: 4px; font-size: 15px; }
+  .price-card .list { text-align: left; margin: 26px auto 30px; padding: 0; list-style: none; max-width: 300px; }
+  .price-card .list li { padding-left: 26px; position: relative; margin: 12px 0; font-size: 15.5px; color: var(--ink-soft); }
+  .price-card .list li::before { content: "✓"; position: absolute; left: 0; color: var(--accent); font-weight: 800; }
+
+  /* FAQ */
+  .faq { max-width: 760px; margin: 0 auto; }
+  .faq details { border-bottom: 1px solid var(--rule); padding: 20px 4px; }
+  .faq summary { cursor: pointer; font-weight: 600; font-size: 17px; list-style: none; display: flex; align-items: center; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: "+"; margin-left: auto; color: var(--ink-faint); font-family: "JetBrains Mono", monospace; font-size: 20px; }
+  .faq details[open] summary::after { content: "−"; }
+  .faq p { margin-top: 12px; color: var(--ink-soft); font-size: 16px; }
+
+  /* Honest note */
+  .honest { text-align: center; color: var(--ink-soft); font-size: 16px; max-width: 60ch; margin: 0 auto; }
+  .honest .mono { color: var(--ink-faint); font-size: 13.5px; display: block; margin-top: 14px; }
+
+  footer { border-top: 1px solid var(--rule); padding: 40px 0 60px; color: var(--ink-faint); font-size: 13.5px; }
+  footer .wrap { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+
+  .section-head { max-width: 60ch; }
+
+  @media (max-width: 860px) {
+    .hero-grid, .feat, .problem .row { grid-template-columns: 1fr; gap: 36px; }
+    .feat.rev .feat-media { order: 0; }
+    .why-grid { grid-template-columns: 1fr; }
+    .nav a:not(.btn) { display: none; }
+    .hero { padding: 60px 0 20px; }
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .btn { transition: none; } }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+</style>
+</head>
+<body>
+
+<header class="topbar" id="topbar">
+  <div class="wrap">
+    <div class="brand">MD좋아<span class="dot">.</span></div>
+    <nav class="nav">
+      <a href="#features">기능</a>
+      <a href="#why">왜 MD좋아</a>
+      <a href="#price">가격</a>
+      <a class="btn" href="#price">다운로드</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <!-- thesis: raw markdown → rendered -->
+        <div class="transform">
+          <code class="src"><span class="hash"># </span>AI가 고친 문서, 눈으로 바로 확인</code>
+          <div class="arrow mono">↳ 렌더링</div>
+        </div>
+        <h1>AI가 고친 문서,<br>눈으로 바로 확인</h1>
+        <p class="sub">Claude Code나 Cursor로 개발하다 보면 <span class="mono" style="color:var(--code-red)">.md</span>가 계속 쌓이죠.
+          열어서 읽고, 바뀐 곳 확인하고, 번역까지 &mdash; MD좋아 하나면 돼요.</p>
+        <div class="cta-row">
+          <a class="btn lg" href="#price">₩14,900에 다운로드</a>
+          <span class="price-note"><b>평생 1회 결제</b> · 구독 없음</span>
+        </div>
+        <div class="os-row">
+          <span class="os">Windows 10/11</span>
+          <span class="dotsep"></span>
+          <span class="os">macOS</span>
+          <span class="dotsep"></span>
+          <span>로그인 없이 바로</span>
+        </div>
+      </div>
+      <div class="hero-media">
+        <div class="win">
+          <div class="bar">
+            <div class="traffic"><i class="r"></i><i class="y"></i><i class="g"></i></div>
+            <div class="title"><b>docs</b> / showcase.md</div>
+          </div>
+          <img src="../assets/showcase-rendered-light.png" alt="MD좋아로 렌더링한 마크다운 문서 — 표·콜아웃·체크리스트·수식" />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PROBLEM ── -->
+<section class="problem">
+  <div class="wrap">
+    <div class="row">
+      <div class="section-head">
+        <p class="eyebrow mono"><b>&gt;</b> 지금은 이렇게 보고 있지 않나요</p>
+        <h2>원문 그대로 읽으면<br>눈이 먼저 지쳐요</h2>
+        <p class="lead"><span class="mono" style="color:var(--code-red)">#</span>, <span class="mono">| --- |</span>,
+          <span class="mono">&gt; [!note]</span>, <span class="mono">- [x]</span> …
+          이런 기호를 머릿속에서 하나하나 그려가며 읽는 거, 생각보다 지쳐요. 그거, MD좋아가 대신 해드릴게요.</p>
+      </div>
+      <div>
+        <pre class="rawbox"><span class="m">## </span>한눈에 보기
+
+<span class="m">|</span> 영역 <span class="m">|</span> 변경 <span class="m">|</span> 영향도 <span class="m">|</span> 롤백 <span class="m">|</span>
+<span class="m">|</span> :--- <span class="m">|</span> :--- <span class="m">|</span> :---: <span class="m">|</span> :---: <span class="m">|</span>
+<span class="m">|</span> 정산 배치 <span class="m">|</span> 실시간 스트리밍 <span class="m">|</span> 높음 <span class="m">|</span> 가능 <span class="m">|</span>
+
+<span class="m">&gt; [!warning]</span> 되돌릴 수 없습니다
+<span class="m">- [x]</span> 실시간 스트리밍 전환
+<span class="m">- [ ]</span> CSV 내보내기</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURES ── -->
+<div id="features"></div>
+
+<!-- Feature 1: auto reload -->
+<section>
+  <div class="wrap">
+    <div class="feat">
+      <div class="feat-media">
+        <div class="win">
+          <div class="bar">
+            <div class="traffic"><i class="r"></i><i class="y"></i><i class="g"></i></div>
+            <div class="title"><b>docs</b> / showcase.md</div>
+          </div>
+          <img src="../assets/feature-auto-reload.gif" alt="파일이 바뀌면 뷰어가 즉시 갱신되는 모습" />
+        </div>
+      </div>
+      <div>
+        <p class="eyebrow"><b>## </b>자동 새로고침</p>
+        <h2>AI가 파일을 고치면<br>화면이 먼저 압니다</h2>
+        <p>에이전트가 <span class="mono">.md</span>를 고치면 화면이 알아서 다시 그려져요.
+          새로고침 버튼 누를 일이 없어요.</p>
+        <ul>
+          <li>파일이 바뀌면 바로 다시 그림</li>
+          <li>편집 중일 땐 덮어쓰지 않고 알려만 줌</li>
+          <li>새로 생기거나 바뀐 파일은 트리에 배지로</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Feature 2: review diff (dark band) -->
+<section class="band-dark">
+  <div class="wrap">
+    <div class="feat rev">
+      <div class="feat-media">
+        <div class="win dark">
+          <div class="bar">
+            <div class="traffic"><i class="r"></i><i class="y"></i><i class="g"></i></div>
+            <div class="title"><b>변경 리뷰</b> · 3개</div>
+          </div>
+          <img src="../assets/feature-review-diff.png" alt="AI 변경 리뷰 센터 — 이전과 현재를 좌우 diff로 비교" />
+        </div>
+      </div>
+      <div>
+        <p class="eyebrow"><b>## </b>AI 변경 리뷰 센터</p>
+        <h2>뭐가 바뀌었는지<br>한 줄씩 확인</h2>
+        <p>처음 봤던 내용과 지금 파일을 좌우로 나란히 놓고 비교해요.
+          여러 파일을 한 화면에서 보고, 읽기 전용이라 실수로 건드릴 일도 없어요.</p>
+        <ul>
+          <li>이전과 현재를 좌우로 나란히</li>
+          <li>새로 만든 파일, 고친 파일, 지운 파일 한눈에</li>
+          <li>원본은 절대 건드리지 않음</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Feature 3: rendering quality -->
+<section>
+  <div class="wrap">
+    <div class="feat">
+      <div class="feat-media">
+        <div class="win">
+          <div class="bar">
+            <div class="traffic"><i class="r"></i><i class="y"></i><i class="g"></i></div>
+            <div class="title"><b>docs</b> / showcase.md</div>
+          </div>
+          <img src="../assets/showcase-rendered-mid.png" alt="Mermaid 다이어그램과 코드 하이라이팅 렌더링" />
+        </div>
+      </div>
+      <div>
+        <p class="eyebrow"><b>## </b>제대로 된 렌더링</p>
+        <h2>다이어그램도, 코드도,<br>수식도 그대로</h2>
+        <p>개발 문서에 들어가는 건 웬만하면 다 그려내요. 읽자고 딴 프로그램 켤 일, 없어요.</p>
+        <ul>
+          <li>Mermaid 다이어그램과 수식(KaTeX)</li>
+          <li>코드 하이라이팅, 30개 넘는 언어(Shiki)</li>
+          <li>표, 각주, 체크박스, 콜아웃까지 (GFM)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Feature 4: translation (text-forward, no fake screenshot) -->
+<section class="problem">
+  <div class="wrap">
+    <div class="feat rev">
+      <div class="feat-media">
+        <div class="win">
+          <div class="bar">
+            <div class="traffic"><i class="r"></i><i class="y"></i><i class="g"></i></div>
+            <div class="title"><b>번역</b> · 한국어 ↔ English</div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr;">
+            <div style="padding:22px 22px; border-right:1px solid var(--rule);">
+              <div class="mono" style="font-size:12px;color:var(--accent);margin-bottom:12px;">한국어</div>
+              <div style="font-size:15px;line-height:1.75;color:var(--ink-soft);">웹훅 실패 시 지수 백오프로 최대 6회 재시도합니다. 6회를 넘기면 DLQ로 옮기고 알림을 보냅니다.</div>
+            </div>
+            <div style="padding:22px 22px; background:var(--paper-2);">
+              <div class="mono" style="font-size:12px;color:var(--accent);margin-bottom:12px;">English</div>
+              <div style="font-size:15px;line-height:1.75;color:var(--ink-soft);">On webhook failure, retry up to 6 times with exponential backoff. After 6, move to the DLQ and send an alert.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <p class="eyebrow"><b>## </b>한↔영 번역, 돈 더 안 듭니다</p>
+        <h2>쓰던 계정 그대로,<br>번역까지</h2>
+        <p>쓰고 계신 <span class="mono">claude</span> CLI를 그대로 씁니다. API 키를 새로 만들 필요도, 돈을 더 낼 일도 없어요.
+          원문과 번역을 나란히 놓고 복사하거나 저장하면 끝이에요.</p>
+        <ul>
+          <li>어느 쪽으로 번역할지 직접 선택 (한국어로 / 영어로)</li>
+          <li>원문과 번역을 좌우로, 스크롤도 같이 움직임</li>
+          <li>번역 버튼 누를 때만 통신</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── WHY ── -->
+<section id="why">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow"><b>&gt;</b> 왜 MD좋아인가</p>
+      <h2>영어권 Mac 전용 도구가<br>채우지 못하는 자리</h2>
+    </div>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="k mono">platform</div>
+        <h3>Windows가 먼저</h3>
+        <p>메인 타깃이 Windows예요. 파일 연결부터 경로, 인코딩까지 Windows에서 직접 확인해요. macOS도 같은 코드로 같이 굴러가고요.</p>
+      </div>
+      <div class="why-card">
+        <div class="k mono">language</div>
+        <h3>한국어로 만들었어요</h3>
+        <p>메뉴도 설정도 번역도 전부 한국어가 먼저예요. 한국어로 일하는 팀 생각하면서 만들었고요.</p>
+      </div>
+      <div class="why-card">
+        <div class="k mono">privacy</div>
+        <h3>문서가 밖으로<br>안 나갑니다</h3>
+        <p>인터넷 없이 내 컴퓨터 안에서 다 돌아가요. 딱 하나, 번역만 직접 누를 때 통신하고요. 회사 문서를 다뤄도 걱정 없어요.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PRICE ── -->
+<section id="price" class="pricing problem">
+  <div class="wrap">
+    <p class="eyebrow" style="text-align:center"><b>$</b> 가격</p>
+    <h2>한 번 사면, 계속 씁니다</h2>
+    <div class="price-card">
+      <div class="amount">₩14,900<span> / 1회</span></div>
+      <div class="once">평생 라이선스 · 구독 없음</div>
+      <ul class="list">
+        <li>Windows · macOS 설치 파일</li>
+        <li>기능 전부 (뷰어, 리뷰, 번역, 내보내기)</li>
+        <li>앞으로 나올 업데이트도 포함</li>
+      </ul>
+      <a class="btn lg" href="#" style="width:100%; justify-content:center;">Gumroad에서 다운로드</a>
+      <div class="once" style="margin-top:14px;">결제하면 다운로드 링크 바로 드려요</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FAQ ── -->
+<section>
+  <div class="wrap faq">
+    <p class="eyebrow" style="text-align:center"><b>?</b> 자주 묻는 질문</p>
+    <h2 style="text-align:center; margin-bottom:30px;">궁금한 점</h2>
+    <details open>
+      <summary>VS Code 미리보기로도 되지 않나요?</summary>
+      <p>미리보기까지는 되죠. 근데 자동 새로고침이나 바뀐 곳 비교, 번역은 안 돼요. MD좋아는 'AI가 고친 문서를 검토하는' 그 흐름만 보고 만든 도구거든요.</p>
+    </details>
+    <details>
+      <summary>Windows에서도 되나요?</summary>
+      <p>네, Windows가 메인이에요. macOS도 같은 코드로 똑같이 돼요.</p>
+    </details>
+    <details>
+      <summary>번역이 무료라는 게 무슨 뜻인가요?</summary>
+      <p>쓰고 계신 <span class="mono">claude</span> CLI(Claude Code) 계정을 그대로 씁니다. 그래서 API 키를 새로 만들거나 돈을 더 낼 필요가 없어요.</p>
+    </details>
+    <details>
+      <summary>결제하면 정확히 뭘 받나요?</summary>
+      <p>최신 버전 설치 파일(Windows·macOS) 다운로드 링크요. 앞으로 나올 업데이트도 그대로 포함이에요.</p>
+    </details>
+  </div>
+</section>
+
+<!-- ── HONEST NOTE ── -->
+<section class="band-dark" style="padding:60px 0;">
+  <div class="wrap">
+    <p class="honest" style="color:var(--dark-soft)">
+      그럴듯한 후기나 가입자 숫자 같은 건 없습니다. 사내에서 매일 쓰는 사람이 진짜로 한 명 있다는 것, 그거 하나는 사실이에요.
+      <span class="mono">써보고 마음에 들면, 그걸로 됐습니다.</span>
+    </p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>© 2026 sy.baek@fusionsoft.co.kr · MD좋아</div>
+    <div>Pretendard · JetBrains Mono (SIL OFL 1.1)</div>
+  </div>
+</footer>
+
+<script>
+  // Topbar hairline appears once you scroll — keeps the hero clean.
+  const tb = document.getElementById('topbar');
+  const onScroll = () => tb.classList.toggle('scrolled', window.scrollY > 12);
+  addEventListener('scroll', onScroll, { passive: true }); onScroll();
+</script>
+</body>
+</html>

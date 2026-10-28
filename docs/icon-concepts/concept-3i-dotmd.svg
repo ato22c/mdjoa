@@ -1,0 +1,10 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <title>시안 3-I — ".md" 흰 바탕 · 검정 글자 · 파란 점</title>
+  <rect x="32" y="32" width="960" height="960" rx="232" fill="#FFFFFF"/>
+  <rect x="34" y="34" width="956" height="956" rx="230" fill="none" stroke="#E4E4E1" stroke-width="4"/>
+  <text x="586" y="720" text-anchor="middle" dominant-baseline="alphabetic"
+        font-family="Pretendard, -apple-system, 'Segoe UI', system-ui, sans-serif"
+        font-size="560" font-weight="700" letter-spacing="-18" fill="#1F1F1F">md</text>
+  <!-- 확장자 점(.) — 파란색, r96(키움). 베이스라인 정렬 -->
+  <circle cx="177" cy="648" r="96" fill="#4F7AF8"/>
+</svg>
